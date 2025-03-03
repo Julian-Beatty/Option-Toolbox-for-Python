@@ -32,6 +32,3 @@ Locally Linear Regression to estimate the IV surface.
 Fitting a quadratic polynomial for the IV surface
 <img width="720" alt="Local Linear Regression" src="Images/Quadratic GLD.png" />
 
-## Lowess
-Lowess to estimate the surface
-<img width="720" alt="Local Linear Regression" src="Images/Lowess GLD.png" />
