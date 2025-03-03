@@ -20,4 +20,4 @@ cd Non-parametric-and-universal-option-implied-densities
 
 Sample Plots
 Local Linear Regression
-<img width="720" alt="Local Linear Regression" src="images/local_linear.png" />
+<img width="720" alt="Local Linear Regression" src="Images/GLD KRR.png" />
