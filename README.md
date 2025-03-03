@@ -16,3 +16,4 @@ git clone https://github.com/yourusername/Non-parametric-and-universal-option-im
 cd Non-parametric-and-universal-option-implied-densities
 
 ## Sample Plots
+<img width="720" alt="2021-08-03_2021-08-27" src="https://github.com/user-attachments/assets/e0db1521-8260-4164-9dcc-b4ed19a7a096" />
