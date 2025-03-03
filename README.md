@@ -16,4 +16,11 @@ git clone https://github.com/yourusername/Non-parametric-and-universal-option-im
 cd Non-parametric-and-universal-option-implied-densities
 
 ## Sample Plots
-<img width="720" alt="2021-08-03_2021-08-27" src="https://github.com/user-attachments/assets/e0db1521-8260-4164-9dcc-b4ed19a7a096" />
+Local Linear Regression
+<img width="720" alt="2022-09-02_2022-09-30" src="https://github.com/user-attachments/assets/522518df-89bd-47d4-96aa-377cb04fdbab" />
+Kernel Ridge
+<img width="720" alt="2022-09-02_2022-09-30" src="https://github.com/user-attachments/assets/d818f888-f175-45f5-81cd-0e7928499dd3" />
+Lowess
+<img width="720" alt="2022-09-02_2022-09-30" src="https://github.com/user-attachments/assets/49c4c5eb-0c61-4792-8973-6304fc10307e" />
+Quadratic polynomial
+<img width="720" alt="2022-09-02 on 2022-09-30" src="https://github.com/user-attachments/assets/3c1ebabc-44aa-4331-9e0e-a97f1b512458" />
