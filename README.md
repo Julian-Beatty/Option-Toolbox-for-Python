@@ -15,9 +15,15 @@ Clone the repository:
 ```bash
 git clone https://github.com/yourusername/Non-parametric-and-universal-option-implied-densities.git
 cd Non-parametric-and-universal-option-implied-densities
+```
 
 
-
-Sample Plots
-Local Linear Regression
+## Sample Plots
+## Kernel Ridge Regression
 <img width="720" alt="Local Linear Regression" src="Images/GLD KRR.png" />
+## Local Linear Regression
+<img width="720" alt="Local Linear Regression" src="Images/Local Linear GLD.png" />
+## Quadratic Polynomial
+<img width="720" alt="Local Linear Regression" src="Images/Quadratic GLD.png" />
+## Lowess
+<img width="720" alt="Local Linear Regression" src="Images/Lowess GLD.png" />
