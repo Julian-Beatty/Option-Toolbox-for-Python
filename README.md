@@ -20,10 +20,14 @@ cd Non-parametric-and-universal-option-implied-densities
 
 ## Sample Plots
 ## Kernel Ridge Regression
+Kernel Ridge Regress to estimate the IV surface.
 <img width="720" alt="Local Linear Regression" src="Images/GLD KRR.png" />
 ## Local Linear Regression
+Locally Linear Regression to estimate the IV surface.
 <img width="720" alt="Local Linear Regression" src="Images/Local Linear GLD.png" />
 ## Quadratic Polynomial
+Fitting a quadratic polynomial for the IV surface
 <img width="720" alt="Local Linear Regression" src="Images/Quadratic GLD.png" />
 ## Lowess
+Lowess to estimate the surface
 <img width="720" alt="Local Linear Regression" src="Images/Lowess GLD.png" />
