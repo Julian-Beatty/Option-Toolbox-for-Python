@@ -910,7 +910,7 @@ def pasting_yields_option_df(option_df,yields_df,new_column_name):
         on=["qoute_dt", "rounded_maturity"]
     )
     return option_df
-def polynomial(option_df,argument_dict,interpolate_large = True,extrapolate_curve=True,xlims=(-0.5,0.5)):
+def polynomial(option_df,argument_dict,interpolate_large = True,extrapolate_curve=True,xlims=(-0.5,0.5),plotting=True):
     """
     Description of function: This function takes in an option dataframe, which contains the option quotes on a particular day, with a specific maturity.
     It will fit a N order polynomial to this IV curve to smooth out the implied volatilities, then convert them to calls, numerically differentiate twice and save the plots.
@@ -943,7 +943,7 @@ def polynomial(option_df,argument_dict,interpolate_large = True,extrapolate_curv
     #######TO DO: 
     synthetic_used = False 
     if (interpolate_large):
-        strikes, iv,synthetic_strikes,synthetic_iv= interpolate_large_gaps(original_strikes,original_iv)   
+        combined_strikes, combined_iv,synthetic_strikes,synthetic_iv= interpolate_large_gaps(original_strikes,original_iv)   
         if (len(synthetic_strikes))> 0:
             synthetic_used = True
     
@@ -954,7 +954,7 @@ def polynomial(option_df,argument_dict,interpolate_large = True,extrapolate_curv
     ### Extrapolation
     extrapolation_used=False
     if (extrapolate_curve):
-        combined_strikes,combined_iv,extrapolated_strikes,extrapolated_iv=tail_extrapolation(strikes,iv)
+        combined_strikes,combined_iv,extrapolated_strikes,extrapolated_iv=tail_extrapolation(combined_strikes,combined_iv)
         if (len(extrapolated_strikes))>0:
             extrapolation_used=True
     ##
@@ -997,65 +997,65 @@ def polynomial(option_df,argument_dict,interpolate_large = True,extrapolate_curv
 
 
     
-    interpolated_strikes = interpolated_strikes[2:-2]
-    interpolated_iv = interpolated_iv[2:-2]
+    #interpolated_strikes = interpolated_strikes[2:-2]
+    #interpolated_iv = interpolated_iv[2:-2]
 
-    interpolated_prices = interpolated_prices[2:-2]
+    #interpolated_prices = interpolated_prices[2:-2]
     CDF = CDF[2:-2]
     PDF = PDF[2:-2]
-    
-    return_axis,return_pdf=price_to_return_pdf(interpolated_strikes, PDF, stock_price)
-
+    pdf_strike=interpolated_strikes[2:-2]
+    return_axis,return_pdf=price_to_return_pdf(pdf_strike, PDF, stock_price)
+    #plt.plot(return_axis,return_pdf)
     
     
     ##Extracting date
 
-
     ##Save plots in a folder in the user directory
-    current_directory = os.getcwd()
-    figure1_folder = os.path.join(current_directory, foldername)
-    if not os.path.exists(figure1_folder):
-        os.makedirs(figure1_folder)
-        print(f"Created folder: {figure1_folder}")
-        
-        
-    fig, (ax1, ax2, ax3) = plt.subplots(3, 1, figsize=(10, 15))
-    ax1.scatter(original_strikes/stock_price-1, original_iv,color="red")
-    if extrapolation_used:
-        ax1.scatter(extrapolated_strikes/stock_price-1,extrapolated_iv,label="Extrapolated points")
-    # Add synthetic points if interpolate_large is True
-    if synthetic_used:
-        ax1.scatter(synthetic_strikes/stock_price-1, synthetic_iv, color="blue", label="Synthetic Points")
-    ax1.scatter(strikes/stock_price-1, iv,color="red",label="Original Points")
-    ax1.plot(interpolated_strikes/stock_price-1, interpolated_iv)
-    ax1.set_title(f"Order {order} polynomial interpolation on {date} to {exdate} {asset}")
-    ax1.set_xlabel("Strikes")
-    ax1.set_ylabel("Implied Volatility")
-    ax1.legend()
-    ax1.set_xlim(xlims[0],xlims[1])
-
-    ax3.plot(interpolated_strikes,CDF)
-    ax3.set_title("Option implied CDF")
-    ax3.set_xlabel("Strikes")
-    ax3.set_ylabel("CDF")
+    if plotting==True:
+        current_directory = os.getcwd()
+        figure1_folder = os.path.join(current_directory, foldername)
+        if not os.path.exists(figure1_folder):
+            os.makedirs(figure1_folder)
+            print(f"Created folder: {figure1_folder}")
+            
+            
+        fig, (ax1, ax2, ax3) = plt.subplots(3, 1, figsize=(10, 15))
+        ax1.scatter(original_strikes/stock_price-1, original_iv,color="red")
+        if extrapolation_used:
+            ax1.scatter(extrapolated_strikes/stock_price-1,extrapolated_iv,label="Extrapolated points")
+        # Add synthetic points if interpolate_large is True
+        if synthetic_used:
+            ax1.scatter(synthetic_strikes/stock_price-1, synthetic_iv, color="blue", label="Synthetic Points")
+        ax1.scatter(combined_strikes/stock_price-1, combined_iv,color="red",label="Original Points")
+        ax1.plot(interpolated_strikes/stock_price-1, interpolated_iv)
+        ax1.set_title(f"Order {order} polynomial interpolation on {date} to {exdate} {asset}")
+        ax1.set_xlabel("Strikes")
+        ax1.set_ylabel("Implied Volatility")
+        ax1.legend()
+        ax1.set_xlim(xlims[0],xlims[1])
     
-    ax2.plot(return_axis, return_pdf)
-    ax2.set_title("Option implied PDF")
-    ax2.set_xlabel("Strikes")
-    ax2.set_ylabel("PDF")
-    ax2.set_xlim(xlims[0],xlims[1])
-
-    # Show the combined plot
-
-    titlename_1=f"{date} on {exdate}"
-    save_path = os.path.join(figure1_folder, titlename_1)
-    plt.savefig(save_path)
-    plt.close()
+        ax3.plot(pdf_strike,CDF)
+        ax3.set_title("Option implied CDF")
+        ax3.set_xlabel("Strikes")
+        ax3.set_ylabel("CDF")
+        
+        ax2.plot(return_axis, return_pdf)
+        ax2.set_title("Option implied PDF")
+        ax2.set_xlabel("Strikes")
+        ax2.set_ylabel("PDF")
+        ax2.set_xlim(xlims[0],xlims[1])
+    
+        # Show the combined plot
+    
+        titlename_1=f"{date} on {exdate}"
+        save_path = os.path.join(figure1_folder, titlename_1)
+        plt.savefig(save_path)
+        plt.close()
 
     ##final packaging
-    density_df=pd.DataFrame({"strike":interpolated_strikes.reshape(-1),"PDF":PDF.reshape(-1)})
+    density_df=pd.DataFrame({"Return":return_axis.reshape(-1),"PDF":return_pdf.reshape(-1)})
     iv_df=pd.DataFrame({"strike":interpolated_strikes.reshape(-1), "IV":interpolated_iv.reshape(-1)})
-    dictionary_df={"PDF":density_df,"IV":iv_df}
+    dictionary_df={"PDF":density_df,"iv_df":iv_df}
     return {date +","+ exdate: dictionary_df}
 
 def interpolate_large_gaps(strikes,iv,acceptable_number=3,large_gap_number=5):
@@ -1220,11 +1220,38 @@ def kernel_ridge_pdf(option_df,argument_dict,interpolate_large=True,plotting=Tru
     ##date information
     date=option_df["date"].values[0]
     exdate=option_df["exdate"].values[0]
-    
+    argument_list=list(argument_dict.keys())
     #Extract strikes and IV
     original_iv=option_df["mid_iv"].values.reshape(-1)
     original_strikes=option_df["strike"].values.reshape(-1)
-
+    
+    if "kernel" in argument_list:
+        kernel=argument_dict["kernel"]
+        if kernel=="polynomial":
+            param_grid = {
+                "alpha": np.logspace(-14, 1, 10),  
+                "degree": [6, 7,8],  
+                "gamma": np.logspace(4, 7, 10),  
+                "coef0": np.linspace(-15, -5, 5)}
+        if kernel=="rbf":
+            param_grid = {
+                "alpha": np.logspace(-10, 1,10),  # Regularization parameter
+                "gamma": np.logspace(-1.75,-0.5, 20),  # RBF kernel parameter -1.75 to -.5
+            }
+        if kernel=="sigmoid":
+            param_grid = {
+                "alpha": np.logspace(-10, 1, 20),
+                "gamma": np.logspace(-0.75, -0.1, 10),
+                "coef0": np.linspace(0, 5, 10),  # Allow flexibility
+                    }
+    else:
+        kernel="rbf"
+        param_grid = {
+                "alpha": np.logspace(-10, 1,20),  # Regularization parameter
+                "gamma": np.logspace(-0.75,-0.20, 25),  # RBF kernel parameter -1.75 to -.5
+            }
+        
+ 
     #parse arguments
     cv=argument_dict["cv"]
     if cv=="loo":
@@ -1257,7 +1284,7 @@ def kernel_ridge_pdf(option_df,argument_dict,interpolate_large=True,plotting=Tru
     # plt.show()
     # Generate test data for interpolation
     ##5000 and 10000
-    interpolated_strikes = np.linspace(min(strikes), max(strikes), 3000).reshape(-1, 1)  # Fine grid of strikes for smooth curve
+    interpolated_strikes = np.linspace(min(strikes), max(strikes), 2000).reshape(-1, 1)  # Fine grid of strikes for smooth curve
     #interpolated_strikes = np.linspace(0.5, max(strikes)+stock_price*1.4, 2000).reshape(-1, 1)  # Fine grid of strikes for smooth curve
     strikes=strikes.reshape(-1,1)
     scaler = StandardScaler()
@@ -1265,21 +1292,26 @@ def kernel_ridge_pdf(option_df,argument_dict,interpolate_large=True,plotting=Tru
     interpolated_strikes_scaled = scaler.transform(interpolated_strikes)  # Transform test data only
 
     # Generate Kernel Ridge Object and train model on IV
-    kr_rbf = KernelRidge(kernel="rbf")
+    
+    kr_rbf = KernelRidge(kernel=kernel)
     ##20/20
-    param_grid = {
-        "alpha": np.logspace(-10, 1,10),  # Regularization parameter
-        "gamma": np.logspace(-0.75,0.75, 10),  # RBF kernel parameter
-    }
+    # param_grid = {
+    #     "alpha": np.logspace(-10, 1,25),  # Regularization parameter
+    #     "gamma": np.logspace(-1.75,-0.5, 25),  # RBF kernel parameter -1.75 to -.5
+    # }
+    
+    
+    #grid_search = GridSearchCV(kr_rbf, param_grid, cv=cv, scoring='neg_mean_squared_error')
     grid_search = GridSearchCV(kr_rbf, param_grid, cv=cv, scoring='neg_mean_squared_error')
+
     grid_search.fit(strikes_scaled, iv)
-    best_alpha = grid_search.best_params_["alpha"]
-    best_gamma = grid_search.best_params_["gamma"]
-    kr_best = KernelRidge(alpha=best_alpha, kernel="rbf", gamma=best_gamma)
-    kr_best.fit(strikes_scaled, iv)
+    #best_alpha = grid_search.best_params_["alpha"]
+    #best_gamma = grid_search.best_params_["gamma"]
+    kr_best = grid_search.best_estimator_
+    #kr_best.fit(strikes_scaled, iv)
     
     ###Predictinv IV and cleaning
-    interpolated_iv = kr_best.predict(interpolated_strikes_scaled)
+    interpolated_iv = grid_search.predict(interpolated_strikes_scaled)
     #interpolated_iv=arbitrage_repair(interpolated_iv.reshape(-1), interpolated_strikes.reshape(-1), option_df)
     #strike_test,iv_pred=tail_linear(strike_test, iv_pred, stock_price)
     # plt.plot(interpolated_strikes, interpolated_iv)
@@ -1384,11 +1416,11 @@ def kernel_ridge_pdf(option_df,argument_dict,interpolate_large=True,plotting=Tru
         plt.savefig(save_path)
         plt.close()
         
-        iv_objects={"name":"kernel ridge","strikes":strikes,"ivs":iv,"object":kr_best}
-        density_df=pd.DataFrame({"Return":kde_return_axis.reshape(-1),"KDE":kde_return_pdf.reshape(-1),"maturity":maturity,"risk":R,"forward":Rf})
-        pdf_df=pd.DataFrame({"Return":return_axis.reshape(-1),"PDF":return_pdf.reshape(-1),"maturity":maturity,"risk":R,"forward":Rf})
-        iv_df=pd.DataFrame({"Return":interpolated_strikes.reshape(-1),"IV":interpolated_iv.reshape(-1),"maturity":maturity,"risk":R,"forward":Rf})
-        dictionary={"KDE":density_df,"PDF":pdf_df,"iv_df":iv_df,"iv_object":iv_objects,"KDE_object":kde}
+    iv_objects={"name":"kernel ridge","strikes":strikes,"ivs":iv,"object":kr_best}
+    density_df=pd.DataFrame({"Return":kde_return_axis.reshape(-1),"KDE":kde_return_pdf.reshape(-1),"maturity":maturity,"risk":R,"forward":Rf})
+    pdf_df=pd.DataFrame({"Return":return_axis.reshape(-1),"PDF":return_pdf.reshape(-1),"maturity":maturity,"risk":R,"forward":Rf})
+    iv_df=pd.DataFrame({"strike":interpolated_strikes.reshape(-1),"IV":interpolated_iv.reshape(-1),"maturity":maturity,"risk":R,"forward":Rf})
+    dictionary={"KDE":density_df,"PDF":pdf_df,"iv_df":iv_df,"iv_object":iv_objects,"KDE_object":kde}
         
     return {date +","+ exdate: dictionary}
 def price_to_return_pdf(strikes,pdf,stock_price):
@@ -1555,7 +1587,7 @@ def SVR_model(option_df,argument_dict,interpolate_large = True):
     dictionary={"PDF":density_df,"IV":iv_df}
 
     return {date +","+ exdate: dictionary}
-def lowess(option_df,argument_dict,interpolate_large=True,extrapolate_curve=True,xlims=(-0.5,0.5)):
+def lowess(option_df,argument_dict,interpolate_large=True,extrapolate_curve=True,xlims=(-0.5,0.5),plotting=True):
     """
     
 
@@ -1617,7 +1649,7 @@ def lowess(option_df,argument_dict,interpolate_large=True,extrapolate_curve=True
         cv = KFold(n_splits=cv_type, shuffle=True, random_state=42)
     
     # Define candidate frac values (smoothing parameters for LOWESS) between 0.1 and 1.0
-    candidate_fracs = np.linspace(0.01, 0.8, 20)
+    candidate_fracs = np.linspace(0.01, 0.9, 20)
     
     cv_errors = {}    # To store the average error for each candidate frac
     best_error = np.inf
@@ -1664,9 +1696,9 @@ def lowess(option_df,argument_dict,interpolate_large=True,extrapolate_curve=True
     # Use xvals to directly evaluate the LOWESS estimate on the fine grid
     interpolated_iv = sm.nonparametric.lowess(iv, strikes, frac=best_frac, xvals=interpolated_strikes)
     
-    plt.plot(interpolated_strikes,interpolated_iv)
-    plt.scatter(strikes,iv)
-    plt.show()
+    # plt.plot(interpolated_strikes,interpolated_iv)
+    # plt.scatter(strikes,iv)
+    # plt.show()
     
     interpolated_calls = py_vollib.black_scholes.black_scholes('c', option_df["underlying_price"].values[0],
                                                              interpolated_strikes, maturity, R,interpolated_iv).values.reshape(-1)
@@ -1752,15 +1784,15 @@ def lowess(option_df,argument_dict,interpolate_large=True,extrapolate_curve=True
         save_path = os.path.join(figure1_folder, titlename_1)
         plt.savefig(save_path)
         plt.close()
-        iv_objects={"name":"lowes","frac":best_frac}
-        kde_df=pd.DataFrame({"Return":kde_return_axis.reshape(-1),"PDF":kde_return_pdf.reshape(-1),"maturity":maturity,"risk":R,"forward":Rf})
-        pdf_df=pd.DataFrame({"Return":pdf_strike.reshape(-1),"PDF":pdf.reshape(-1),"maturity":maturity,"risk":R,"forward":Rf})
-        iv_df=pd.DataFrame({"Return":pdf_strike.reshape(-1),"PDF":pdf.reshape(-1),"maturity":maturity,"risk":R,"forward":Rf})
-        dictionary={"KDE":kde_df,"PDF":pdf_df,"IV":iv_df,"iv_object":iv_objects,"KDE_object":kde}
-        print(f'{date}')
+    iv_objects={"name":"lowes","frac":best_frac}
+    kde_df=pd.DataFrame({"Return":kde_return_axis.reshape(-1),"PDF":kde_return_pdf.reshape(-1),"maturity":maturity,"risk":R,"forward":Rf})
+    pdf_df=pd.DataFrame({"Return":return_axis.reshape(-1),"PDF":return_pdf.reshape(-1),"maturity":maturity,"risk":R,"forward":Rf})
+    iv_df=pd.DataFrame({"strikes":pdf_strike.reshape(-1),"PDF":pdf.reshape(-1),"maturity":maturity,"risk":R,"forward":Rf})
+    dictionary={"KDE":kde_df,"PDF":pdf_df,"iv_df":iv_df,"iv_object":iv_objects,"KDE_object":kde}
+    print(f'{date}')
     return {date +","+ exdate: dictionary}
     
-def local_polynomial(option_df, argument_dict,interpolate_large=True,extrapolate_curve=True,xlims=(-0.5,0.5)):
+def local_polynomial(option_df, argument_dict,interpolate_large=True,extrapolate_curve=True,xlims=(-0.5,0.5),plotting=True):
     """
     Performs cross validation to select the best bandwidth for KernelReg.
 
@@ -1797,11 +1829,15 @@ def local_polynomial(option_df, argument_dict,interpolate_large=True,extrapolate
     asset_name=argument_dict["asset"]
     foldername=argument_dict["folder"]
     KDE_name=argument_dict["KDE"]
+    #bw_setting=argument_dict["bw_setting"]
+    bw_setting="recommended"
+        
     synthetic_used = False 
     if (interpolate_large):
         strikes, iv,synthetic_strikes,synthetic_ivs= interpolate_large_gaps(original_strikes.reshape(-1),original_iv.reshape(-1),2,2.5)   
         if (len(synthetic_strikes))> 0:
             synthetic_used = True
+    extrapolate_used=False
     if (extrapolate_curve):
         strikes,iv,extrapolated_strikes,extrapolated_iv=tail_extrapolation(strikes, iv)
         if (len(extrapolated_strikes))> 0:
@@ -1812,8 +1848,12 @@ def local_polynomial(option_df, argument_dict,interpolate_large=True,extrapolate
         cv = LeaveOneOut()
     else:
         cv = KFold(n_splits=cv_type, shuffle=True, random_state=42)
-    candidate_bw=np.linspace(min(np.diff(original_strikes)),max(np.diff(original_strikes)),50)
-    #candidate_bw=np.linspace(np.mean(np.diff(original_strikes)),2*max(np.diff(original_strikes)),50)
+    
+    candidate_bw=np.linspace(np.mean(np.diff(original_strikes)),5*max(np.diff(original_strikes)),50)
+    if bw_setting=="recommended":
+        candidate_bw=np.linspace(np.mean(np.diff(original_strikes)),5*max(np.diff(original_strikes)),50)
+    if bw_setting=="unbounded": #no lower bound, usually causes issues
+        candidate_bw=np.linspace(0.5*min(np.diff(original_strikes)),2*max(np.diff(original_strikes)),50)
 
     for bw in candidate_bw:
         errors = []
@@ -1864,7 +1904,7 @@ def local_polynomial(option_df, argument_dict,interpolate_large=True,extrapolate
     
     cdf,pdf=numerical_differentiation(interpolated_strikes.reshape(-1), interpolated_calls)
     pdf=pdf*np.exp(-R*maturity)
-    plotting=True
+    #plotting=True
     pdf=pdf[2:-2]
     pdf_strike=interpolated_strikes[2:-2]
     cdf=cdf[2:-2]
@@ -1937,12 +1977,12 @@ def local_polynomial(option_df, argument_dict,interpolate_large=True,extrapolate
         save_path = os.path.join(figure1_folder, titlename_1)
         plt.savefig(save_path)
         plt.close()
-        iv_objects={"name":"local polynomial","bandwidth":best_bw,"object":kr_final}
-        kde_df=pd.DataFrame({"Return":kde_return_axis.reshape(-1),"PDF":kde_return_pdf.reshape(-1),"maturity":maturity,"risk":R,"forward":Rf})
-        pdf_df=pd.DataFrame({"Return":pdf_strike.reshape(-1),"PDF":pdf.reshape(-1),"maturity":maturity,"risk":R,"forward":Rf})
-        iv_df=pd.DataFrame({"Return":interpolated_strikes.reshape(-1),"PDF":interpolated_iv.reshape(-1)})
-        dictionary={"KDE":kde_df,"PDF":pdf_df,"IV":iv_df,"iv_object":iv_objects,"KDE_object":kde}
-        print(f'{date}')
+    iv_objects={"name":"local polynomial","bandwidth":best_bw,"object":kr_final}
+    kde_df=pd.DataFrame({"Return":kde_return_axis.reshape(-1),"PDF":kde_return_pdf.reshape(-1),"maturity":maturity,"risk":R,"forward":Rf})
+    pdf_df=pd.DataFrame({"Return":return_axis.reshape(-1),"PDF":return_pdf.reshape(-1),"maturity":maturity,"risk":R,"forward":Rf})
+    iv_df=pd.DataFrame({"strike":interpolated_strikes.reshape(-1),"IV":interpolated_iv.reshape(-1)})
+    dictionary={"KDE":kde_df,"PDF":pdf_df,"iv_df":iv_df,"iv_object":iv_objects,"KDE_object":kde}
+    print(f'{date}')
     return {date +","+ exdate: dictionary}
 
 
@@ -1965,7 +2005,7 @@ def find_cdf(pdf,x_values):
 
     """
     return None
-def SABR_pdf(option_df,argument_dict,xlims=(-0.5,0.5)):
+def SABR_pdf(option_df,argument_dict,xlims=(-0.5,0.5),plotting=True):
     """
     
 
@@ -1999,7 +2039,7 @@ def SABR_pdf(option_df,argument_dict,xlims=(-0.5,0.5)):
 
     (alpha, beta, rho, nu), opt_result = calibrate_sabr(forward, original_strikes, maturity, original_iv)
     
-    interpolated_strikes=np.linspace(max(original_strikes[0]-0.4*stock_price,0.5), original_strikes[-1]+stock_price*5,5000)
+    interpolated_strikes=np.linspace(max(original_strikes[0]-0.1*stock_price,0.5), original_strikes[-1]+stock_price*5,5000)
     interpolated_iv = np.array([sabr_volatility(forward, K, maturity, alpha, beta, rho, nu) for K in interpolated_strikes])
     
     # plt.plot(interpolated_strikes,interpolated_iv)
@@ -2014,7 +2054,7 @@ def SABR_pdf(option_df,argument_dict,xlims=(-0.5,0.5)):
     pdf=pdf*np.exp(-R*maturity)
     
     
-    plotting=True
+    #plotting=True
     pdf=pdf[2:-2]
     pdf_strike=interpolated_strikes[2:-2]
     cdf=cdf[2:-2]
@@ -2030,7 +2070,6 @@ def SABR_pdf(option_df,argument_dict,xlims=(-0.5,0.5)):
 
     # plt.plot(return_axis,return_pdf)
     # plt.show()
-    plotting=True
     if plotting==True:
         current_directory = os.getcwd()
         figure1_folder = os.path.join(current_directory, foldername)
@@ -2073,11 +2112,13 @@ def SABR_pdf(option_df,argument_dict,xlims=(-0.5,0.5)):
         save_path = os.path.join(figure1_folder, titlename_1)
         plt.savefig(save_path)
         plt.close()
-        density_df=pd.DataFrame({"Return":return_axis.reshape(-1),"PDF":return_pdf.reshape(-1),"maturity":maturity,"risk":R,"forward":Rf})
-        iv_df=pd.DataFrame({"Return":interpolated_strikes.reshape(-1),"IV":interpolated_iv.reshape(-1),"maturity":maturity,"risk":R,"forward":Rf})
+    density_df=pd.DataFrame({"Return":return_axis.reshape(-1),"PDF":return_pdf.reshape(-1),"maturity":maturity,"risk":R,"forward":Rf})
+    iv_df=pd.DataFrame({"Return":interpolated_strikes.reshape(-1),"IV":interpolated_iv.reshape(-1),"maturity":maturity,"risk":R,"forward":Rf})
+    sabr_dict={"alpha":alpha,"beta":beta,"rho":rho,"nu":nu,"forward":forward}
+    (alpha, beta, rho, nu), opt_result = calibrate_sabr(forward, original_strikes, maturity, original_iv)
 
-        dictionary={"PDF":density_df,"IV":iv_df}
-        print(f'{date}')
+    dictionary={"PDF":density_df,"IV":iv_df,"sabr_dict":sabr_dict}
+    print(f'{date}')
     return {date +","+ exdate: dictionary}
 
 def sabr_volatility(f, K, T, alpha, beta, rho, nu):
@@ -2240,3 +2281,6 @@ def compute_call_prices_from_cdf(KDE_grid, kde_cdf, discount_factor):
         call_prices[i] = discount_factor * np.trapz(survival[i:], KDE_grid[i:])
     
     return call_prices
+
+import numpy as np
+
