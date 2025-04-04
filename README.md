@@ -1,7 +1,7 @@
 # Non-Parametric and Universal Option Implied Densities
 
 ## Overview
-This repository provides a non parametric, and robust procedure to estimate option implied distributions. Interpolating the IV surface with Kernel Ridge Regression, and using a kernel density estimate provides well behaved, smooth, arbitrage free and model free estimates of the option implied densities. The procedure is compared to other non parametric methods such as local polynomial regression.
+This repository provides a non parametric, and robust procedure to estimate option implied distributions. Interpolating the IV surface with Kernel Ridge Regression, and using a kernel density estimate provides well behaved, smooth, arbitrage free and model free estimates of the option implied densities. The procedure is compared to other non parametric methods such as local polynomial regression. The technical paper is also in the github.
 
 ## Features
 - Kernel density estimation for implied density extraction
