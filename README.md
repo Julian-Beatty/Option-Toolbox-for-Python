@@ -1,7 +1,7 @@
 # Option Toolbox for Python
 
 ## Overview
-This repository provides an easy to use toolbox for various option-related tasks, geared especially towards estimating quantities such as the risk neutral density from many options. Supports data extracted from OptionMetrics or Bitcoin Options from OptionsDX
+This repository provides an easy to use toolbox for various option-related tasks, geared especially towards estimating quantities such as the risk neutral density from many options. Supports data extracted from OptionMetrics or Bitcoin Options from OptionsDX.
 
 ## Features
 - **Risk-Neutral Density Estimation**
