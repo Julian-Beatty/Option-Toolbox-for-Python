@@ -1,20 +1,21 @@
 # Non-Parametric and Universal Option Implied Densities
 
 ## Overview
-This repository provides a non parametric, and robust procedure to estimate option implied distributions. Interpolating the IV surface with Kernel Ridge Regression, and using a kernel density estimate provides well behaved, smooth, arbitrage free and model free estimates of the option implied densities. The procedure is compared to other non parametric methods such as local polynomial regression. The technical paper is also in the github.
+This repository provides an easy to use toolbox for various option-related tasks, geared especially towards estimating quantities such as the risk neutral density from many options.
 
 ## Features
-- Kernel density estimation for implied density extraction
-- Support for various smoothing techniques
-- Visualization tools for density comparison
-- Efficient numerical methods for calibration
+- KRisk Neutral Option Implied Density extraction using Shimko (1993) smoothened-implied-volatility approach and Breeden (1973) second derivative method.
+  - Supports multiple curve fitting options that are found in the literature and academia: SABR, SVI, local polynomial kernel regression, Kernel Ridge Regression and more
+  - Easy extrapolation and arbitrage-free cleaning using kernel-density estimation.
+- Pricing Kernels
+  -Computes pricing kernel by dividing Risk Neutral Density by the real density. The real density in this case is the density from simulating returns from a GARCH model.
+-Risk Neutral Moments, obtained by taking the moments from the risk neutral density (in log-return space)
 
-## Installation
-Clone the repository:
+## Upcoming Features
+-Bakshi Moment estimators
+-Volatility Surface estimation
+-Risk Neutral Density estimation using mixture of log-normals
 
-```bash
-git clone https://github.com/yourusername/Non-parametric-and-universal-option-implied-densities.git
-cd Non-parametric-and-universal-option-implied-densities
 ```
 
 
