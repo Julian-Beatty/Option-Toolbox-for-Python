@@ -4,7 +4,7 @@
 This repository provides an easy to use toolbox for various option-related tasks, geared especially towards estimating quantities such as the risk neutral density from many options.
 
 ## Features
-- KRisk Neutral Option Implied Density extraction using Shimko (1993) smoothened-implied-volatility approach and Breeden (1973) second derivative method.
+- Risk Neutral Option Implied Density extraction using Shimko (1993) smoothened-implied-volatility approach and Breeden (1973) second derivative method.
   - Supports multiple curve fitting options that are found in the literature and academia: SABR, SVI, local polynomial kernel regression, Kernel Ridge Regression and more
   - Easy extrapolation and arbitrage-free cleaning using kernel-density estimation.
 - Pricing Kernels
