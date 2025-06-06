@@ -1,20 +1,35 @@
-# Non-Parametric and Universal Option Implied Densities
+# Option Toolbox for Python
 
 ## Overview
-This repository provides an easy to use toolbox for various option-related tasks, geared especially towards estimating quantities such as the risk neutral density from many options.
+This repository provides an easy to use toolbox for various option-related tasks, geared especially towards estimating quantities such as the risk neutral density from many options. Supports data extracted from OptionMetrics or Bitcoin Options from OptionsDX
 
 ## Features
-- Risk Neutral Option Implied Density extraction using Shimko (1993) smoothened-implied-volatility approach and Breeden (1973) second derivative method.
-  - Supports multiple curve fitting options that are found in the literature and academia: SABR, SVI, local polynomial kernel regression, Kernel Ridge Regression and more
-  - Easy extrapolation and arbitrage-free cleaning using kernel-density estimation.
-- Pricing Kernels
-  -Computes pricing kernel by dividing Risk Neutral Density by the real density. The real density in this case is the density from simulating returns from a GARCH model.
--Risk Neutral Moments, obtained by taking the moments from the risk neutral density (in log-return space)
+- **Risk-Neutral Density Estimation**
+  - Implements the Shimko (1993) smoothened implied volatility approach and the Breeden-Litzenberger (1973) second derivative method.
+  - Supports a variety of curve-fitting methods from academic literature:
+    - SABR
+    - SVI
+    - Local polynomial kernel regression
+    - Kernel Ridge Regression
+  - Includes arbitrage-free cleaning and extrapolation using kernel density estimation.
+
+- **Pricing Kernels**
+  - Computes the pricing kernel by dividing the risk-neutral density by the physical (real-world) density.
+  - The physical density is obtained via GARCH-simulated return distributions.
+
+- **Risk-Neutral Moments**
+  - Extracts statistical moments (mean, variance, skewness, etc.) from the risk-neutral density in log-return space.
 
 ## Upcoming Features
--Bakshi Moment estimators
--Volatility Surface estimation
--Risk Neutral Density estimation using mixture of log-normals
+- **Bakshi et al. Moment Estimators**
+  - Implementation of higher-order moment estimation based on Bakshi, Kapadia, and Madan (2003).
+
+- **Volatility Surface Estimation**
+  - Tools for constructing and visualizing arbitrage-free implied volatility surfaces.
+
+- **Risk-Neutral Density via Mixture of Log-Normals**
+  - Estimation of RND using flexible mixtures of log-normal distributions for improved fit across strikes.
+
 
 ```
 
