@@ -31,20 +31,18 @@ This repository provides an easy to use toolbox for various option-related tasks
   - Estimation of RND using flexible mixtures of log-normal distributions for improved fit across strikes.
 
 
-```
-
-
 # Sample Plots
 
 ## Kernel Ridge Regression
-Kernel Ridge Regress to estimate the IV surface.
-<img width="720" alt="Local Linear Regression" src="Images/GLD KRR.png" />
+Kernel Ridge Regression is used to estimate the implied volatility (IV) surface.
+<img width="720" alt="Kernel Ridge Regression" src="Images/GLD KRR.png" />
 
 ## Local Linear Regression
-Locally Linear Regression to estimate the IV surface.
+Locally linear regression provides a nonparametric fit to the IV surface.
 <img width="720" alt="Local Linear Regression" src="Images/Local Linear GLD.png" />
 
-## Quadratic Polynomial
-Fitting a quadratic polynomial for the IV surface
-<img width="720" alt="Local Linear Regression" src="Images/Quadratic GLD.png" />
+## Quadratic Polynomial Fit
+A quadratic polynomial is used to approximate the shape of the IV surface.
+<img width="720" alt="Quadratic Polynomial Fit" src="Images/Quadratic GLD.png" />
+
 
